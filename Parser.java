@@ -31,21 +31,33 @@ public class Parser {
 			token = getToken();
 		else error();
 	}
-	// <expr> -> <term> { + <term> }
+	// <expr> -> <term> { + <term> | '-' <term> }
 	int expr() {
 		int result = term();
-		while(token == '+') {
-			match('+');
-			result += term();
+		while(token == '+' || token == '-') {
+			if (token == '+') {
+				match('+');
+				result += term();
+			}
+			else if (token == '-') {
+				match('-');
+				result -= term(); 
+			}
 		}
 		return result;
 	}
-	// <term> -> <factor> { * <factor> }
+	// <term> -> <factor> { '*' <factor> | '/' <factor> } 
 	int term() {
 		int result = factor();
-		while (token == '*') {
-			match('*');
-			result *= factor();
+		while (token == '*' || token == '/') {
+			if (token == '*') {
+				match('*');
+				result *= factor();
+			}
+			else if (token == '/') {
+				match('/');
+				result /= factor();
+			}
 		}
 		return result;
 	}
@@ -79,7 +91,7 @@ public class Parser {
 	
 	// number -> digit { digit }
 	int number() {
-		int result = ch - '0';
+		int result = ch - '0';  // 0을 빼서 실제 숫자로 바꿔줌
 		try {
 			ch = input.read();
 			while(Character.isDigit(ch)) {
